@@ -16,6 +16,8 @@ public interface FlightRepository extends JpaRepository<Flight, UUID> {
 
     boolean existsByFlightNumber(String flightNumber);
 
+    boolean existsByFlightNumberAndStatusNot(String flightNumber, FlightStatus status);
+
     List<Flight> findByFlightNumberIn(Collection<String> flightNumbers);
 
     List<Flight> findByStatusNotIn(List<FlightStatus> terminalStatuses);

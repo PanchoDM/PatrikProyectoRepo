@@ -27,7 +27,10 @@ public class Flight {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "flight_number", nullable = false, unique = true)
+    // Unico solo mientras el vuelo sigue en curso (indice parcial en DB,
+    // ver V4__flight_number_unique_only_when_active.sql); un mismo numero
+    // se reutiliza dia a dia una vez que el vuelo anterior esta COMPLETADO.
+    @Column(name = "flight_number", nullable = false)
     private String flightNumber;
 
     private String origen;

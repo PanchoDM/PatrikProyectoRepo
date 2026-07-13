@@ -72,7 +72,7 @@ public class FlightService {
         String flightNumber = rawFlightNumber.trim().toUpperCase();
         FlightPrefix prefix = FlightPrefix.fromFlightNumber(flightNumber);
 
-        if (flightRepository.existsByFlightNumber(flightNumber)) {
+        if (flightRepository.existsByFlightNumberAndStatusNot(flightNumber, FlightStatus.COMPLETADO)) {
             throw new DuplicateFlightException(flightNumber);
         }
 
@@ -293,7 +293,12 @@ public class FlightService {
 
         Set<String> flightNumbers = rows.stream().map(FlightSyncRow::flightNumber).collect(Collectors.toSet());
         Map<String, Flight> existingByNumber = new HashMap<>();
-        flightRepository.findByFlightNumberIn(flightNumbers).forEach(f -> existingByNumber.put(f.getFlightNumber(), f));
+        // Un vuelo COMPLETADO de un dia anterior no cuenta como "existente": el
+        // mismo numero se reutiliza dia a dia, asi que esa fila debe tratarse
+        // como creacion de un vuelo nuevo, no como actualizacion del viejo.
+        flightRepository.findByFlightNumberIn(flightNumbers).stream()
+                .filter(f -> f.getStatus() != FlightStatus.COMPLETADO)
+                .forEach(f -> existingByNumber.put(f.getFlightNumber(), f));
 
         Instant now = Instant.now();
         List<Flight> toInsert = new ArrayList<>();

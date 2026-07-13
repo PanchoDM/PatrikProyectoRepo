@@ -9,7 +9,8 @@ public record AppProperties(
         Cors cors,
         Supabase supabase,
         Timers timers,
-        Notifications notifications
+        Notifications notifications,
+        KeepAlive keepAlive
 ) {
 
     public record Cors(List<String> allowedOrigins) {
@@ -53,5 +54,8 @@ public record AppProperties(
 
         public record Push(String vapidPublicKey, String vapidPrivateKey, String vapidSubject) {
         }
+    }
+
+    public record KeepAlive(boolean enabled, String url, long intervalMs) {
     }
 }

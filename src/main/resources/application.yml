@@ -55,6 +55,17 @@ app:
   supabase:
     url: ${SUPABASE_URL:https://your-project.supabase.co}
 
+  # --- Keep-alive: evita que Render suspenda el servicio por inactividad -----
+  # El plan free de Render apaga el dyno tras ~15 min sin trafico HTTP entrante
+  # y luego tarda ~50s en volver a levantarlo (cold start) en la siguiente
+  # request. KeepAliveService se autoconsulta antes de ese plazo para que
+  # Render siempre vea trafico reciente. RENDER_EXTERNAL_URL lo define Render
+  # automaticamente en el entorno del servicio (no hace falta configurarlo).
+  keep-alive:
+    enabled: ${KEEP_ALIVE_ENABLED:true}
+    url: ${RENDER_EXTERNAL_URL:}
+    interval-ms: 600000
+
   timers:
     ata-window-minutes: 40
     descarga-minutes-la: 40
